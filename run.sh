@@ -14,55 +14,100 @@ echo "
 ╠═══════════════════════════════════════════════╣
 ║ Thanks for using our DOCKER image! Should you ║
 ║ have issues, please reach out or create a     ║
-║ a github issue. Thanks!                       ║
+║ github issue. Thanks!                         ║
 ║                                               ║
 ║ For more information:                         ║
-║ https://github.com/netwarlan                  ║
+║ github.com/netwarlan                          ║
 ╚═══════════════════════════════════════════════╝
 "
 
-## Startup
+
+## Set default values if none were provided
+## ==============================================
 [[ -z "$TF2_SERVER_PORT" ]] && TF2_SERVER_PORT="27015"
 [[ -z "$TF2_SERVER_MAXPLAYERS" ]] && TF2_SERVER_MAXPLAYERS="24"
 [[ -z "$TF2_SERVER_MAP" ]] && TF2_SERVER_MAP="ctf_2fort"
-
-## Config
+[[ -z "$TF2_SVLAN" ]] && TF2_SVLAN="0"
 [[ -z "$TF2_SERVER_HOSTNAME" ]] && TF2_SERVER_HOSTNAME="TF2 Server"
 [[ ! -z "$TF2_SERVER_PW" ]] && TF2_SERVER_PW="sv_password $TF2_SERVER_PW"
 [[ ! -z "$TF2_SERVER_RCONPW" ]] && TF2_SERVER_RCONPW="rcon_password $TF2_SERVER_RCONPW"
+[[ -z "$TF2_SERVER_ENABLE_REMOTE_CFG" ]] && TF2_SERVER_ENABLE_REMOTE_CFG=false
+[[ -z "$TF2_SERVER_UPDATE_ON_START" ]] && TF2_SERVER_UPDATE_ON_START=true
+[[ -z "$TF2_SERVER_VALIDATE_ON_START" ]] && TF2_SERVER_VALIDATE_ON_START=false
 
+
+
+
+## Update on startup
+## ==============================================
+if [[ "$TF2_SERVER_UPDATE_ON_START" = true ]] || [[ "$TF2_SERVER_VALIDATE_ON_START" = true ]]; then
+echo "
+╔═══════════════════════════════════════════════╗
+║ Checking for updates                          ║
+╚═══════════════════════════════════════════════╝
+"
+  if [[ "$TF2_SERVER_VALIDATE_ON_START" = true ]]; then
+    VALIDATE_FLAG='validate'
+  else 
+    VALIDATE_FLAG=''
+  fi
+
+  $STEAMCMD_DIR/steamcmd.sh \
+  +login $STEAMCMD_USER $STEAMCMD_PASSWORD $STEAMCMD_AUTH_CODE \
+  +force_install_dir $GAME_DIR \
+  +app_update $STEAMCMD_APP $VALIDATE_FLAG \
+  +quit
+
+fi
+
+
+
+
+
+## Download config if needed
+## ==============================================
+if [[ "$TF2_SERVER_ENABLE_REMOTE_CFG" = true ]]; then
+echo "
+╔═══════════════════════════════════════════════╗
+║ Downloading remote config                     ║
+╚═══════════════════════════════════════════════╝
+"
+  if [[ -z "$TF2_SERVER_REMOTE_CFG" ]]; then
+    echo "  Remote config enabled, but no URL provided..."
+  else
+    echo "  Downloading config..."
+    wget -q $TF2_SERVER_REMOTE_CFG -O $GAME_DIR/tf/cfg/server.cfg
+  fi
+
+else
+
+## If no config was supplied, then setup defaults
+echo "
+╔═══════════════════════════════════════════════╗
+║ Building server config                        ║
+╚═══════════════════════════════════════════════╝
+"
 cat <<EOF >$GAME_DIR/tf/cfg/server.cfg
-hostname $TF2_SERVER_HOSTNAME
+hostname "$TF2_SERVER_HOSTNAME"
 $TF2_SERVER_PW
 $TF2_SERVER_RCONPW
 EOF
 
-
-## Update
-if [[ "$TF2_SERVER_UPDATE_ON_START" = true ]];
-then
-echo "
-╔═══════════════════════════════════════════════╗
-║ Checking for Updates                          ║
-╚═══════════════════════════════════════════════╝
-"
-$STEAMCMD_DIR/steamcmd.sh \
-+login $STEAMCMD_USER $STEAMCMD_PASSWORD $STEAMCMD_AUTH_CODE \
-+force_install_dir $GAME_DIR \
-+app_update $STEAMCMD_APP validate \
-+quit
-
-echo "
-╔═══════════════════════════════════════════════╗
-║ SERVER up to date                             ║
-╚═══════════════════════════════════════════════╝
-"
 fi
 
+
+
+
 ## Run
+## ==============================================
 echo "
 ╔═══════════════════════════════════════════════╗
-║ Starting SERVER                               ║
+║ Starting server                               ║
 ╚═══════════════════════════════════════════════╝
+  Hostname: $TF2_SERVER_HOSTNAME
+  Port: $TF2_SERVER_PORT
+  Max Players: $TF2_SERVER_MAXPLAYERS
+  Map: $TF2_SERVER_MAP
 "
-$GAME_DIR/srcds_run -game tf -console -usercon +port $TF2_SERVER_PORT +maxplayers $TF2_SERVER_MAXPLAYERS +map $TF2_SERVER_MAP +sv_lan 1 -secure
+
+$GAME_DIR/srcds_run -game tf -console -usercon +port $TF2_SERVER_PORT +maxplayers $TF2_SERVER_MAXPLAYERS +map $TF2_SERVER_MAP +sv_lan $TF2_SVLAN

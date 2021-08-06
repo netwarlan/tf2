@@ -6,7 +6,8 @@ LABEL maintainer="Jeff Nelson <jeff@netwar.org>"
 ARG DEBIAN_FRONTEND=noninteractive
 
 ## Set Build Arguments
-ENV GAME_DIR="/app/tf2" \
+ENV APP_DIR="/app" \
+    GAME_DIR="/app/tf2" \
     GAME_USER="steam" \
     STEAMCMD_APP="232250" \
     STEAMCMD_USER="anonymous" \
@@ -31,6 +32,7 @@ RUN apt-get update \
         libstdc++6:i386 \
         zlib1g:i386 \
         libsdl2-2.0-0:i386 \
+        wget \
     && apt-get clean \
     && rm -rf /var/tmp/* /var/lib/apt/lists/* /tmp/* \
 
@@ -39,14 +41,11 @@ RUN apt-get update \
     && mkdir -p $STEAMCMD_DIR \
 
     ## Create our User
-    && useradd -ms /bin/bash $GAME_USER
-
-## Copy our run script into the image
-COPY run.sh $GAME_DIR/run.sh
+    && useradd -ms /bin/bash $GAME_USER \
 
     ## Set Directory Permissions
-RUN chown -R $GAME_USER:$GAMEUSER $GAME_DIR \
-    && chown -R $GAME_USER:$GAMEUSER $STEAMCMD_DIR
+    && chown -R $GAME_USER:$GAME_USER $GAME_DIR \
+    && chown -R $GAME_USER:$GAME_USER $STEAMCMD_DIR
 
 ## Change to our User
 USER $GAME_USER
@@ -55,8 +54,6 @@ USER $GAME_USER
 RUN curl -s http://media.steampowered.com/installer/steamcmd_linux.tar.gz | tar -xzC $STEAMCMD_DIR \
     && $STEAMCMD_DIR/steamcmd.sh \
         +login $STEAMCMD_USER $STEAMCMD_PASSWORD $STEAMCMD_AUTH_CODE \
-        +force_install_dir $GAME_DIR \
-        +app_update $STEAMCMD_APP validate \
         +quit \
 
     ## Create symlinks and appid for Steam
@@ -64,8 +61,11 @@ RUN curl -s http://media.steampowered.com/installer/steamcmd_linux.tar.gz | tar 
     && ln -s $STEAMCMD_DIR/linux32/steamclient.so ~/.steam/sdk32/steamclient.so \
     && echo "$STEAMCMD_APP" > $GAME_DIR/steam_appid.txt
 
+## Copy our run script into the image
+COPY run.sh $APP_DIR/run.sh
+
 ## Set working directory
-WORKDIR $GAME_DIR
+WORKDIR $APP_DIR
 
 ## Start the run script
 CMD ["bash", "run.sh"]
