@@ -79,21 +79,24 @@ echo "
     wget -q $TF2_SERVER_REMOTE_CFG -O $GAME_DIR/tf/cfg/server.cfg
   fi
 
-else
+fi
 
-## If no config was supplied, then setup defaults
+
+
+
+## Build server config
+## ==============================================
 echo "
 ╔═══════════════════════════════════════════════╗
 ║ Building server config                        ║
 ╚═══════════════════════════════════════════════╝
 "
-cat <<EOF >$GAME_DIR/tf/cfg/server.cfg
-hostname "$TF2_SERVER_HOSTNAME"
+cat <<EOF >> $GAME_DIR/tf/cfg/server.cfg
+// Values passed from Docker environment
 $TF2_SERVER_PW
 $TF2_SERVER_RCONPW
 EOF
 
-fi
 
 
 
@@ -104,10 +107,11 @@ echo "
 ╔═══════════════════════════════════════════════╗
 ║ Starting server                               ║
 ╚═══════════════════════════════════════════════╝
-  Hostname: $TF2_SERVER_HOSTNAME
-  Port: $TF2_SERVER_PORT
-  Max Players: $TF2_SERVER_MAXPLAYERS
-  Map: $TF2_SERVER_MAP
+  Hostname: ${TF2_SERVER_HOSTNAME}
+  Port: ${TF2_SERVER_PORT}
+  Max Players: ${TF2_SERVER_MAXPLAYERS}
+  Map: ${TF2_SERVER_MAP}
 "
 
-$GAME_DIR/srcds_run -game tf -console -usercon +port $TF2_SERVER_PORT +maxplayers $TF2_SERVER_MAXPLAYERS +map $TF2_SERVER_MAP +sv_lan $TF2_SVLAN
+## Escaped double quotes help to ensure hostnames with spaces are kept intact
+$GAME_DIR/srcds_run -game tf -console -usercon +hostname \"${TF2_SERVER_HOSTNAME}\" +port $TF2_SERVER_PORT +maxplayers $TF2_SERVER_MAXPLAYERS +map $TF2_SERVER_MAP +sv_lan $TF2_SVLAN
