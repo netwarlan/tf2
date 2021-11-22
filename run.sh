@@ -34,7 +34,7 @@ echo "
 [[ -z "$TF2_SERVER_ENABLE_REMOTE_CFG" ]] && TF2_SERVER_ENABLE_REMOTE_CFG=false
 [[ -z "$TF2_SERVER_UPDATE_ON_START" ]] && TF2_SERVER_UPDATE_ON_START=true
 [[ -z "$TF2_SERVER_VALIDATE_ON_START" ]] && TF2_SERVER_VALIDATE_ON_START=false
-
+[[ -z "$TF2_SERVER_PROPHUNT" ]] && TF2_SERVER_PROPHUNT=false
 
 
 
@@ -96,6 +96,48 @@ cat <<EOF >> $GAME_DIR/tf/cfg/server.cfg
 $TF2_SERVER_PW
 $TF2_SERVER_RCONPW
 EOF
+
+
+
+
+## Check if we are running Prop Hunt
+## ==============================================
+if [[ "$TF2_SERVER_PROPHUNT" = true ]]; then
+echo "
+╔═══════════════════════════════════════════════╗
+║ Setting up Prop Hunt                          ║
+╚═══════════════════════════════════════════════╝
+"
+echo "Installing MetaMod"
+curl -s https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1145-linux.tar.gz | tar -xzC $GAME_DIR/tf
+
+cat <<EOF >> $GAME_DIR/tf/metamod.vdf
+"Plugin"
+{
+  "file" "../tf/addons/metamod/bin/server"
+}
+EOF
+
+echo "Installing SourceMod"
+curl -s https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6528-linux.tar.gz | tar -xzC $GAME_DIR/tf
+
+echo "Installing PropHunt Plugins"
+curl -s https://builds.limetech.io/files/tf2items-1.6.4-hg279-linux.zip --output /tmp/items.zip
+unzip -qq -o /tmp/items.zip -d $GAME_DIR/tf
+
+echo "Installing Maps/Sounds/Configs"
+mkdir /tmp/prophunt-data
+curl -sL https://github.com/netwarlan/tf2-extras/archive/main.tar.gz | tar -xzC /tmp/prophunt-data
+cp -R /tmp/prophunt-data/tf2-extras-main/prophunt/maps/. $GAME_DIR/tf/maps
+cp -R /tmp/prophunt-data/tf2-extras-main/prophunt/sound/. $GAME_DIR/tf/sound
+cp -R /tmp/prophunt-data/tf2-extras-main/prophunt/addons/. $GAME_DIR/tf/addons
+cp /tmp/prophunt-data/tf2-extras-main/prophunt/mapcycle_prophunt.txt $GAME_DIR/tf/cfg/mapcycle_prophunt.txt
+rm -rf /tmp/prophunt-data #Clean up our temp files
+
+echo "Setting up Fast Downloading of map files"
+echo 'sv_downloadurl "https://raw.githubusercontent.com/netwarlan/tf2-extras/main/prophunt"' >> $GAME_DIR/tf/cfg/server.cfg
+
+fi
 
 
 

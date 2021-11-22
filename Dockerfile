@@ -33,6 +33,7 @@ RUN apt-get update \
         zlib1g:i386 \
         libsdl2-2.0-0:i386 \
         wget \
+        unzip \
     && apt-get clean \
     && rm -rf /var/tmp/* /var/lib/apt/lists/* /tmp/* \
 
