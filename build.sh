@@ -1,3 +1,3 @@
 #!/bin/zsh
 
-docker build -t tf2 .
+docker build -t netwarlan/tf2 .

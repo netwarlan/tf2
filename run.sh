@@ -53,8 +53,8 @@ echo "
   fi
 
   $STEAMCMD_DIR/steamcmd.sh \
-  +login $STEAMCMD_USER $STEAMCMD_PASSWORD $STEAMCMD_AUTH_CODE \
   +force_install_dir $GAME_DIR \
+  +login $STEAMCMD_USER $STEAMCMD_PASSWORD $STEAMCMD_AUTH_CODE \
   +app_update $STEAMCMD_APP $VALIDATE_FLAG \
   +quit
 
@@ -141,6 +141,15 @@ fi
 
 
 
+## Print Variables
+## ==============================================
+echo "
+╔═══════════════════════════════════════════════╗
+║ Server set with provided values               ║
+╚═══════════════════════════════════════════════╝
+"
+printenv | grep TF2
+
 
 
 ## Run
@@ -149,10 +158,6 @@ echo "
 ╔═══════════════════════════════════════════════╗
 ║ Starting server                               ║
 ╚═══════════════════════════════════════════════╝
-  Hostname: ${TF2_SERVER_HOSTNAME}
-  Port: ${TF2_SERVER_PORT}
-  Max Players: ${TF2_SERVER_MAXPLAYERS}
-  Map: ${TF2_SERVER_MAP}
 "
 
 ## Escaped double quotes help to ensure hostnames with spaces are kept intact
