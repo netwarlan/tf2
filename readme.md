@@ -11,7 +11,7 @@ docker run -d \
 -p 27015:27015/tcp \
 -e TF2_SERVER_HOSTNAME="DOCKER TF2" \
 -e TF2_SERVER_MAXPLAYERS="32" \
-netwarlan/tf2
+ghcr.io/netwarlan/tf2
 ```
 
 ### Environment Variables
