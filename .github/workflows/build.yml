@@ -22,10 +22,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Branch Tagging
+        if: ${{ env.branch == 'main' }}
+        run: |
+          echo "branch=latest" >> $GITHUB_ENV
+
       - name: Build and Publish Image
         run: |
-          if [ ${{ env.branch }} == "main" ]; then
-            echo "branch=latest" >> $GITHUB_ENV
-          fi
           docker build . --tag ${{ env.registry }}/${{ env.image }}:${{ env.branch }}
           docker push ${{ env.registry }}/${{ env.image }}:${{ env.branch }}
