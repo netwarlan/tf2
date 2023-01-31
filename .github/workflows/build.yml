@@ -25,6 +25,6 @@ jobs:
         run: |
           if [ ${{ env.branch }} == "main" ]; then
             echo "branch=latest" >> $GITHUB_ENV
-          }
+          fi
           docker build . --tag ${{ env.registry }}/${{ env.image }}:${{ env.branch }}
           docker push ${{ env.registry }}/${{ env.image }}:${{ env.branch }}
