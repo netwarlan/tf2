@@ -23,7 +23,7 @@ jobs:
 
       - name: Build and Publish Image
         run: |
-          if [ ${{ env.branch == "main" ]; then
+          if [ ${{ env.branch }} == "main" ]; then
             echo "branch=latest" >> $GITHUB_ENV
           }
           docker build . --tag ${{ env.registry }}/${{ env.image }}:${{ env.branch }}
