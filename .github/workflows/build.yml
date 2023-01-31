@@ -5,7 +5,7 @@ on:
 env:
   registry: ghcr.io/netwarlan
   image: tf2
-  tag: latest
+  branch: ${{ github.head_ref || github.ref_name }}
 
 jobs:
   build-and-publish:
@@ -23,5 +23,8 @@ jobs:
 
       - name: Build and Publish Image
         run: |
-          docker build . --tag ${{ env.registry }}/${{ env.image }}:${{ env.tag }}
-          docker push ${{ env.registry }}/${{ env.image }}:${{ env.tag }}
+          if [ ${{ env.branch == "main" ]; then
+            echo "branch=latest" >> $GITHUB_ENV
+          }
+          docker build . --tag ${{ env.registry }}/${{ env.image }}:${{ env.branch }}
+          docker push ${{ env.registry }}/${{ env.image }}:${{ env.branch }}
