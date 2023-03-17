@@ -24,13 +24,14 @@ RUN apt-get update \
         lib32ncurses5-dev \
         lib32stdc++6 \
         lib32z1 \
-        libtinfo5 \
         libc6 \
-        zlib1g \
-        libsdl2-2.0-0 \
         libcurl3-gnutls:i386 \
-        wget \
+        libncurses5 \
+        libsdl2-2.0-0 \
+        libtinfo5 \
         unzip \
+        wget \
+        zlib1g \
     && apt-get clean \
     && rm -rf /var/tmp/* /var/lib/apt/lists/* /tmp/* \
 
