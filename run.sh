@@ -108,13 +108,14 @@ echo "
 ║ Setting up Prop Hunt                          ║
 ╚═══════════════════════════════════════════════╝
 "
-echo "Installing MetaMod"
-METAMOD_URL="https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1148-linux.tar.gz"
-SOURCEMOD_URL="https://sm.alliedmods.net/smdrop/1.11/sourcemod-1.11.0-git6934-linux.tar.gz"
+METAMOD_BASE_URL="https://mms.alliedmods.net/mmsdrop/1.11"
+SOURCEMOD_BASE_URL="https://sm.alliedmods.net/smdrop/1.11"
 TF2ITEMS_BUILD_URL="https://builds.limetech.io/files/tf2items-1.6.4-hg279-linux.zip"
+METAMOD_LATEST=$(curl -s ${METAMOD_BASE_URL}/mmsource-latest-linux)
+SOURCEMOD_LATEST=$(curl -s ${SOURCEMOD_BASE_URL}/sourcemod-latest-linux)
 
-curl -s ${METAMOD_URL} | tar -xzC $GAME_DIR/tf
-
+echo "Installing MetaMod"
+curl -s ${METAMOD_BASE_URL}/${METAMOD_LATEST} | tar -xzC $GAME_DIR/tf
 cat <<EOF >> $GAME_DIR/tf/metamod.vdf
 "Plugin"
 {
@@ -123,7 +124,7 @@ cat <<EOF >> $GAME_DIR/tf/metamod.vdf
 EOF
 
 echo "Installing SourceMod"
-curl -s ${SOURCEMOD_URL} | tar -xzC $GAME_DIR/tf
+curl -s ${SOURCEMOD_BASE_URL}/${SOURCEMOD_LATEST} | tar -xzC $GAME_DIR/tf
 
 echo "Installing PropHunt Plugins"
 curl -s ${TF2ITEMS_BUILD_URL} --output /tmp/items.zip
