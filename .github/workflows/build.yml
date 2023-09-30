@@ -7,4 +7,4 @@ jobs:
   deploy:
     uses: netwarlan/action-container-build/.github/workflows/build-publish.yaml@main
     with:
-      image-name: tf2
+      image-name: ${{ github.event.repository.name }}
