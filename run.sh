@@ -70,7 +70,7 @@ echo "
 ║ Building server config                        ║
 ╚═══════════════════════════════════════════════╝
 "
-cat <<EOF >> $GAME_DIR/tf/cfg/server.cfg
+cat <<EOF > ${GAME_DIR}/tf/cfg/server.cfg
 // Values passed from Docker environment
 $TF2_SERVER_PW
 $TF2_SERVER_RCONPW
