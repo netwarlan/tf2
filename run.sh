@@ -63,6 +63,24 @@ fi
 
 
 
+## Build server config
+## ==============================================
+echo "
+╔═══════════════════════════════════════════════╗
+║ Building server config                        ║
+╚═══════════════════════════════════════════════╝
+"
+cat <<EOF >> $GAME_DIR/tf/cfg/server.cfg
+// Values passed from Docker environment
+$TF2_SERVER_PW
+$TF2_SERVER_RCONPW
+host_name_store 1
+host_info_show 1
+host_players_show 2
+EOF
+
+
+
 
 ## Download config if needed
 ## ==============================================
@@ -80,22 +98,6 @@ echo "
   fi
 
 fi
-
-
-
-
-## Build server config
-## ==============================================
-echo "
-╔═══════════════════════════════════════════════╗
-║ Building server config                        ║
-╚═══════════════════════════════════════════════╝
-"
-cat <<EOF >> $GAME_DIR/tf/cfg/server.cfg
-// Values passed from Docker environment
-$TF2_SERVER_PW
-$TF2_SERVER_RCONPW
-EOF
 
 
 
