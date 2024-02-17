@@ -18,8 +18,7 @@ echo "
 ║                                               ║
 ║ For more information:                         ║
 ║ github.com/netwarlan                          ║
-╚═══════════════════════════════════════════════╝
-"
+╚═══════════════════════════════════════════════╝"
 
 
 ## Set default values if none were provided
@@ -44,8 +43,7 @@ if [[ "$TF2_SERVER_UPDATE_ON_START" = true ]] || [[ "$TF2_SERVER_VALIDATE_ON_STA
 echo "
 ╔═══════════════════════════════════════════════╗
 ║ Checking for updates                          ║
-╚═══════════════════════════════════════════════╝
-"
+╚═══════════════════════════════════════════════╝"
   if [[ "$TF2_SERVER_VALIDATE_ON_START" = true ]]; then
     VALIDATE_FLAG='validate'
   else 
@@ -68,8 +66,7 @@ fi
 echo "
 ╔═══════════════════════════════════════════════╗
 ║ Building server config                        ║
-╚═══════════════════════════════════════════════╝
-"
+╚═══════════════════════════════════════════════╝"
 cat <<EOF > ${GAME_DIR}/tf/cfg/server.cfg
 // Values passed from Docker environment
 $TF2_SERVER_PW
@@ -88,8 +85,7 @@ if [[ "$TF2_SERVER_ENABLE_REMOTE_CFG" = true ]]; then
 echo "
 ╔═══════════════════════════════════════════════╗
 ║ Downloading remote config                     ║
-╚═══════════════════════════════════════════════╝
-"
+╚═══════════════════════════════════════════════╝"
   if [[ -z "$TF2_SERVER_REMOTE_CFG" ]]; then
     echo "  Remote config enabled, but no URL provided..."
   else
@@ -108,8 +104,7 @@ if [[ "$TF2_SERVER_PROPHUNT" = true ]]; then
 echo "
 ╔═══════════════════════════════════════════════╗
 ║ Setting up Prop Hunt                          ║
-╚═══════════════════════════════════════════════╝
-"
+╚═══════════════════════════════════════════════╝"
 METAMOD_BASE_URL="https://mms.alliedmods.net/mmsdrop/1.11"
 SOURCEMOD_BASE_URL="https://sm.alliedmods.net/smdrop/1.11"
 TF2ITEMS_BUILD_URL="https://builds.limetech.io/files/tf2items-1.6.4-hg279-linux.zip"
@@ -153,8 +148,7 @@ fi
 echo "
 ╔═══════════════════════════════════════════════╗
 ║ Server set with provided values               ║
-╚═══════════════════════════════════════════════╝
-"
+╚═══════════════════════════════════════════════╝"
 printenv | grep TF2
 
 
@@ -164,8 +158,7 @@ printenv | grep TF2
 echo "
 ╔═══════════════════════════════════════════════╗
 ║ Starting server                               ║
-╚═══════════════════════════════════════════════╝
-"
+╚═══════════════════════════════════════════════╝"
 
 ## Escaped double quotes help to ensure hostnames with spaces are kept intact
 $GAME_DIR/srcds_run -game tf -console -usercon \
