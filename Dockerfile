@@ -30,18 +30,17 @@ RUN dpkg --add-architecture i386 \
         libsdl2-2.0-0 \
         libtinfo5 \
         unzip \
-        wget \
         zlib1g \
     && apt clean \
     && rm -rf /var/tmp/* /var/lib/apt/lists/* /tmp/* \
-
+    \
     ## Create Directory Structure
     && mkdir -p $GAME_DIR \
     && mkdir -p $STEAMCMD_DIR \
-
+    \
     ## Create our User
     && useradd -ms /bin/bash $GAME_USER \
-
+    \
     ## Set Directory Permissions
     && chown -R $GAME_USER:$GAME_USER $GAME_DIR \
     && chown -R $GAME_USER:$GAME_USER $STEAMCMD_DIR
@@ -54,7 +53,7 @@ RUN curl -s http://media.steampowered.com/installer/steamcmd_linux.tar.gz | tar 
     && $STEAMCMD_DIR/steamcmd.sh \
         +login $STEAMCMD_USER $STEAMCMD_PASSWORD $STEAMCMD_AUTH_CODE \
         +quit \
-
+    \
     ## Create symlinks and appid for Steam
     && mkdir -p ~/.steam/sdk32 \
     && ln -s $STEAMCMD_DIR/linux32/steamclient.so ~/.steam/sdk32/steamclient.so \

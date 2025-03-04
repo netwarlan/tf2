@@ -5,7 +5,7 @@ echo "
 
 ╔═══════════════════════════════════════════════╗
 ║                                               ║
-║       _  _____________      _____   ___       ║  
+║       _  _____________      _____   ___       ║
 ║      / |/ / __/_  __/ | /| / / _ | / _ \      ║
 ║     /    / _/  / /  | |/ |/ / __ |/ , _/      ║
 ║    /_/|_/___/ /_/   |__/|__/_/ |_/_/|_|       ║
@@ -30,10 +30,11 @@ echo "
 [[ -z "$TF2_SERVER_HOSTNAME" ]] && TF2_SERVER_HOSTNAME="TF2 Server"
 [[ ! -z "$TF2_SERVER_PW" ]] && TF2_SERVER_PW="sv_password $TF2_SERVER_PW"
 [[ ! -z "$TF2_SERVER_RCONPW" ]] && TF2_SERVER_RCONPW="rcon_password $TF2_SERVER_RCONPW"
-[[ -z "$TF2_SERVER_ENABLE_REMOTE_CFG" ]] && TF2_SERVER_ENABLE_REMOTE_CFG=false
+[[ -z "$TF2_SERVER_REMOTE_CFG" ]] && TF2_SERVER_REMOTE_CFG=""
 [[ -z "$TF2_SERVER_UPDATE_ON_START" ]] && TF2_SERVER_UPDATE_ON_START=true
 [[ -z "$TF2_SERVER_VALIDATE_ON_START" ]] && TF2_SERVER_VALIDATE_ON_START=false
-[[ -z "$TF2_SERVER_PROPHUNT" ]] && TF2_SERVER_PROPHUNT=false
+[[ -z "$TF2_SERVER_ENABLE_PROPHUNT" ]] && TF2_SERVER_ENABLE_PROPHUNT=false
+[[ -z "$TF2_SERVER_CONFIG" ]] && TF2_SERVER_CONFIG="server.cfg"
 
 
 
@@ -67,7 +68,7 @@ echo "
 ╔═══════════════════════════════════════════════╗
 ║ Building server config                        ║
 ╚═══════════════════════════════════════════════╝"
-cat <<EOF > ${GAME_DIR}/tf/cfg/server.cfg
+cat <<EOF > ${GAME_DIR}/tf/cfg/$TF2_SERVER_CONFIG
 // Values passed from Docker environment
 $TF2_SERVER_PW
 $TF2_SERVER_RCONPW
@@ -81,18 +82,17 @@ EOF
 
 ## Download config if needed
 ## ==============================================
-if [[ "$TF2_SERVER_ENABLE_REMOTE_CFG" = true ]]; then
+if [[ ! -z "$TF2_SERVER_REMOTE_CFG" ]]; then
 echo "
 ╔═══════════════════════════════════════════════╗
 ║ Downloading remote config                     ║
 ╚═══════════════════════════════════════════════╝"
-  if [[ -z "$TF2_SERVER_REMOTE_CFG" ]]; then
-    echo "  Remote config enabled, but no URL provided..."
-  else
-    echo "  Downloading config..."
-    wget -q $TF2_SERVER_REMOTE_CFG -O $GAME_DIR/tf/cfg/server.cfg
-  fi
-
+  echo "  Downloading config..."
+  FILENAME=$(basename "$TF2_SERVER_REMOTE_CFG")
+  curl --silent -O --output-dir $GAME_DIR/tf/cfg/ $TF2_SERVER_REMOTE_CFG
+  chmod 770 $GAME_DIR/tf/cfg/$FILENAME
+  echo "  Setting $FILENAME as our server exec"
+  TF2_SERVER_CONFIG=$FILENAME
 fi
 
 
@@ -100,7 +100,7 @@ fi
 
 ## Check if we are running Prop Hunt
 ## ==============================================
-if [[ "$TF2_SERVER_PROPHUNT" = true ]]; then
+if [[ "$TF2_SERVER_ENABLE_PROPHUNT" = true ]]; then
 echo "
 ╔═══════════════════════════════════════════════╗
 ║ Setting up Prop Hunt                          ║
@@ -163,6 +163,7 @@ echo "
 ## Escaped double quotes help to ensure hostnames with spaces are kept intact
 $GAME_DIR/srcds_run -game tf -console -usercon \
 +hostname \"${TF2_SERVER_HOSTNAME}\" \
++exec $TF2_SERVER_CONFIG \
 +port $TF2_SERVER_PORT \
 +maxplayers $TF2_SERVER_MAXPLAYERS \
 +map $TF2_SERVER_MAP \
