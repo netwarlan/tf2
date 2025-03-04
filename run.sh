@@ -45,10 +45,9 @@ echo "
 ╔═══════════════════════════════════════════════╗
 ║ Checking for updates                          ║
 ╚═══════════════════════════════════════════════╝"
+  VALIDATE_FLAG=''
   if [[ "$TF2_SERVER_VALIDATE_ON_START" = true ]]; then
     VALIDATE_FLAG='validate'
-  else 
-    VALIDATE_FLAG=''
   fi
 
   $STEAMCMD_DIR/steamcmd.sh \
@@ -88,11 +87,10 @@ echo "
 ║ Downloading remote config                     ║
 ╚═══════════════════════════════════════════════╝"
   echo "  Downloading config..."
-  FILENAME=$(basename "$TF2_SERVER_REMOTE_CFG")
+  TF2_SERVER_CONFIG=$(basename "$TF2_SERVER_REMOTE_CFG")
   curl --silent -O --output-dir $GAME_DIR/tf/cfg/ $TF2_SERVER_REMOTE_CFG
-  chmod 770 $GAME_DIR/tf/cfg/$FILENAME
   echo "  Setting $FILENAME as our server exec"
-  TF2_SERVER_CONFIG=$FILENAME
+  chmod 770 $GAME_DIR/tf/cfg/$TF2_SERVER_CONFIG
 fi
 
 
