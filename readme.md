@@ -1,9 +1,12 @@
 # Team Fortress 2
-              
+
+[![Docker Build](https://img.shields.io/github/actions/workflow/status/netwarlan/tf2/build.yml?label=build)](https://github.com/netwarlan/tf2/actions)
+[![License](https://img.shields.io/github/license/netwarlan/tf2)](LICENSE)
+
 The following repository contains the source files for building a Team Fortress 2 server.
 
+## Running
 
-### Running
 To run the container, issue the following example command:
 ```
 docker run -d \
@@ -14,7 +17,8 @@ docker run -d \
 ghcr.io/netwarlan/tf2
 ```
 
-### Environment Variables
+## Environment Variables
+
 We can make dynamic changes to our TF2 containers by adjusting some of the environment variables passed to our image.
 Below are the ones currently supported and their (defaults):
 
@@ -33,8 +37,33 @@ TF2_SERVER_REMOTE_CFG | No url set
 TF2_SERVER_ENABLE_PROPHUNT | false
 TF2_SERVER_CONFIG | server.cfg
 
+## Health Check
 
-### Prop Hunt Setup
-A prop hunt server can be stood up by passing the following environment variable `TF2_SERVER_PROPHUNT=true` when starting up the container. 
+The container includes a built-in health check that monitors the srcds process. Docker will automatically report the container as unhealthy if the game server stops running.
+
+## Prop Hunt Setup
+
+A prop hunt server can be stood up by passing the following environment variable `TF2_SERVER_ENABLE_PROPHUNT=true` when starting up the container.
 This will install MetaMod and SourceMod into the container as well as all the necessary assets like maps, sounds, sourcemod plugins, etc...
-*Note: It does appear the TF2 server crashes when attempting to connect to the server for the first time after standing up this type of server. Appears to be a bug, but simply connecting again appears to work fine. No further testing has been done.
+
+*Note: It does appear the TF2 server crashes when attempting to connect to the server for the first time after standing up this type of server. Appears to be a bug, but simply connecting again appears to work fine. No further testing has been done.*
+
+## Troubleshooting
+
+**Server won't start**
+- Check Docker logs: `docker logs <container_id>`
+- Verify all required ports are available and not in use
+- Ensure adequate disk space for game files
+
+**Slow startup**
+- First startup downloads ~8GB of game files
+- Subsequent startups are faster if game files are persisted via volume
+
+**Players can't connect**
+- Verify ports 27015 UDP/TCP are forwarded/exposed correctly
+- Check `TF2_SVLAN` is set to `0` for internet play
+- Ensure firewall rules allow incoming connections
+
+## License
+
+This project is open source. See the repository for license details.

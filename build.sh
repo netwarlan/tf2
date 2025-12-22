@@ -1,3 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
+set -e
 
-docker build -t netwarlan/tf2 .
+docker build -t ghcr.io/netwarlan/tf2 "$@" .

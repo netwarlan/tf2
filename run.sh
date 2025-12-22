@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 echo "
 
@@ -23,18 +24,29 @@ echo "
 
 ## Set default values if none were provided
 ## ==============================================
-[[ -z "$TF2_SERVER_PORT" ]] && TF2_SERVER_PORT="27015"
-[[ -z "$TF2_SERVER_MAXPLAYERS" ]] && TF2_SERVER_MAXPLAYERS="24"
-[[ -z "$TF2_SERVER_MAP" ]] && TF2_SERVER_MAP="ctf_2fort"
-[[ -z "$TF2_SVLAN" ]] && TF2_SVLAN="0"
-[[ -z "$TF2_SERVER_HOSTNAME" ]] && TF2_SERVER_HOSTNAME="TF2 Server"
-[[ ! -z "$TF2_SERVER_PW" ]] && TF2_SERVER_PW="sv_password $TF2_SERVER_PW"
-[[ ! -z "$TF2_SERVER_RCONPW" ]] && TF2_SERVER_RCONPW="rcon_password $TF2_SERVER_RCONPW"
-[[ -z "$TF2_SERVER_REMOTE_CFG" ]] && TF2_SERVER_REMOTE_CFG=""
-[[ -z "$TF2_SERVER_UPDATE_ON_START" ]] && TF2_SERVER_UPDATE_ON_START=true
-[[ -z "$TF2_SERVER_VALIDATE_ON_START" ]] && TF2_SERVER_VALIDATE_ON_START=false
-[[ -z "$TF2_SERVER_ENABLE_PROPHUNT" ]] && TF2_SERVER_ENABLE_PROPHUNT=false
-[[ -z "$TF2_SERVER_CONFIG" ]] && TF2_SERVER_CONFIG="server.cfg"
+TF2_SERVER_PORT="${TF2_SERVER_PORT:-27015}"
+TF2_SERVER_MAXPLAYERS="${TF2_SERVER_MAXPLAYERS:-24}"
+TF2_SERVER_MAP="${TF2_SERVER_MAP:-ctf_2fort}"
+TF2_SVLAN="${TF2_SVLAN:-0}"
+TF2_SERVER_HOSTNAME="${TF2_SERVER_HOSTNAME:-TF2 Server}"
+[[ -n "$TF2_SERVER_PW" ]] && TF2_SERVER_PW="sv_password $TF2_SERVER_PW"
+[[ -n "$TF2_SERVER_RCONPW" ]] && TF2_SERVER_RCONPW="rcon_password $TF2_SERVER_RCONPW"
+TF2_SERVER_REMOTE_CFG="${TF2_SERVER_REMOTE_CFG:-}"
+TF2_SERVER_UPDATE_ON_START="${TF2_SERVER_UPDATE_ON_START:-true}"
+TF2_SERVER_VALIDATE_ON_START="${TF2_SERVER_VALIDATE_ON_START:-false}"
+TF2_SERVER_ENABLE_PROPHUNT="${TF2_SERVER_ENABLE_PROPHUNT:-false}"
+TF2_SERVER_CONFIG="${TF2_SERVER_CONFIG:-server.cfg}"
+
+## Validate numeric inputs
+## ==============================================
+if [[ ! "$TF2_SERVER_PORT" =~ ^[0-9]+$ ]]; then
+  echo "Error: TF2_SERVER_PORT must be a valid number"
+  exit 1
+fi
+if [[ ! "$TF2_SERVER_MAXPLAYERS" =~ ^[0-9]+$ ]]; then
+  echo "Error: TF2_SERVER_MAXPLAYERS must be a valid number"
+  exit 1
+fi
 
 
 
@@ -81,7 +93,7 @@ EOF
 
 ## Download config if needed
 ## ==============================================
-if [[ ! -z "$TF2_SERVER_REMOTE_CFG" ]]; then
+if [[ -n "$TF2_SERVER_REMOTE_CFG" ]]; then
 echo "
 ╔═══════════════════════════════════════════════╗
 ║ Downloading remote config                     ║
@@ -124,6 +136,7 @@ curl -s ${SOURCEMOD_BASE_URL}/${SOURCEMOD_LATEST} | tar -xzC $GAME_DIR/tf
 echo "Installing PropHunt Plugins"
 curl -s ${TF2ITEMS_BUILD_URL} --output /tmp/items.zip
 unzip -qq -o /tmp/items.zip -d $GAME_DIR/tf
+rm -f /tmp/items.zip
 
 echo "Installing Maps/Sounds/Configs"
 mkdir /tmp/prophunt-data
