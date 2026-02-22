@@ -62,10 +62,10 @@ echo "
     VALIDATE_FLAG='validate'
   fi
 
-  $STEAMCMD_DIR/steamcmd.sh \
-  +force_install_dir $GAME_DIR \
-  +login $STEAMCMD_USER $STEAMCMD_PASSWORD $STEAMCMD_AUTH_CODE \
-  +app_update $STEAMCMD_APP $VALIDATE_FLAG \
+  "$STEAMCMD_DIR/steamcmd.sh" \
+  +force_install_dir "$GAME_DIR" \
+  +login "$STEAMCMD_USER" "$STEAMCMD_PASSWORD" "$STEAMCMD_AUTH_CODE" \
+  +app_update "$STEAMCMD_APP" $VALIDATE_FLAG \
   +quit
 
 fi
@@ -79,7 +79,7 @@ echo "
 ╔═══════════════════════════════════════════════╗
 ║ Building server config                        ║
 ╚═══════════════════════════════════════════════╝"
-cat <<EOF > ${GAME_DIR}/tf/cfg/$TF2_SERVER_CONFIG
+cat <<EOF > "${GAME_DIR}/tf/cfg/$TF2_SERVER_CONFIG"
 // Values passed from Docker environment
 $TF2_SERVER_PW
 $TF2_SERVER_RCONPW
@@ -100,9 +100,9 @@ echo "
 ╚═══════════════════════════════════════════════╝"
   echo "  Downloading config..."
   TF2_SERVER_CONFIG=$(basename "$TF2_SERVER_REMOTE_CFG")
-  curl --silent -O --output-dir $GAME_DIR/tf/cfg/ $TF2_SERVER_REMOTE_CFG
-  echo "  Setting $FILENAME as our server exec"
-  chmod 770 $GAME_DIR/tf/cfg/$TF2_SERVER_CONFIG
+  curl --silent -O --output-dir "$GAME_DIR/tf/cfg/" "$TF2_SERVER_REMOTE_CFG"
+  echo "  Setting $TF2_SERVER_CONFIG as our server exec"
+  chmod 770 "$GAME_DIR/tf/cfg/$TF2_SERVER_CONFIG"
 fi
 
 
@@ -122,8 +122,8 @@ METAMOD_LATEST=$(curl -s ${METAMOD_BASE_URL}/mmsource-latest-linux)
 SOURCEMOD_LATEST=$(curl -s ${SOURCEMOD_BASE_URL}/sourcemod-latest-linux)
 
 echo "Installing MetaMod"
-curl -s ${METAMOD_BASE_URL}/${METAMOD_LATEST} | tar -xzC $GAME_DIR/tf
-cat <<EOF >> $GAME_DIR/tf/metamod.vdf
+curl -s "${METAMOD_BASE_URL}/${METAMOD_LATEST}" | tar -xzC "$GAME_DIR/tf"
+cat <<EOF >> "$GAME_DIR/tf/metamod.vdf"
 "Plugin"
 {
   "file" "../tf/addons/metamod/bin/server"
@@ -131,24 +131,24 @@ cat <<EOF >> $GAME_DIR/tf/metamod.vdf
 EOF
 
 echo "Installing SourceMod"
-curl -s ${SOURCEMOD_BASE_URL}/${SOURCEMOD_LATEST} | tar -xzC $GAME_DIR/tf
+curl -s "${SOURCEMOD_BASE_URL}/${SOURCEMOD_LATEST}" | tar -xzC "$GAME_DIR/tf"
 
 echo "Installing PropHunt Plugins"
-curl -s ${TF2ITEMS_BUILD_URL} --output /tmp/items.zip
-unzip -qq -o /tmp/items.zip -d $GAME_DIR/tf
+curl -s "${TF2ITEMS_BUILD_URL}" --output /tmp/items.zip
+unzip -qq -o /tmp/items.zip -d "$GAME_DIR/tf"
 rm -f /tmp/items.zip
 
 echo "Installing Maps/Sounds/Configs"
 mkdir /tmp/prophunt-data
 curl -sL https://github.com/netwarlan/tf2-extras/archive/main.tar.gz | tar -xzC /tmp/prophunt-data
-cp -R /tmp/prophunt-data/tf2-extras-main/prophunt/maps/. $GAME_DIR/tf/maps
-cp -R /tmp/prophunt-data/tf2-extras-main/prophunt/sound/. $GAME_DIR/tf/sound
-cp -R /tmp/prophunt-data/tf2-extras-main/prophunt/addons/. $GAME_DIR/tf/addons
-cp /tmp/prophunt-data/tf2-extras-main/prophunt/mapcycle_prophunt.txt $GAME_DIR/tf/cfg/mapcycle_prophunt.txt
+cp -R /tmp/prophunt-data/tf2-extras-main/prophunt/maps/. "$GAME_DIR/tf/maps"
+cp -R /tmp/prophunt-data/tf2-extras-main/prophunt/sound/. "$GAME_DIR/tf/sound"
+cp -R /tmp/prophunt-data/tf2-extras-main/prophunt/addons/. "$GAME_DIR/tf/addons"
+cp /tmp/prophunt-data/tf2-extras-main/prophunt/mapcycle_prophunt.txt "$GAME_DIR/tf/cfg/mapcycle_prophunt.txt"
 rm -rf /tmp/prophunt-data #Clean up our temp files
 
 echo "Setting up Fast Downloading of map files"
-echo 'sv_downloadurl "https://raw.githubusercontent.com/netwarlan/tf2-extras/main/prophunt"' >> $GAME_DIR/tf/cfg/server.cfg
+echo 'sv_downloadurl "https://raw.githubusercontent.com/netwarlan/tf2-extras/main/prophunt"' >> "$GAME_DIR/tf/cfg/$TF2_SERVER_CONFIG"
 
 fi
 
@@ -172,10 +172,10 @@ echo "
 ╚═══════════════════════════════════════════════╝"
 
 ## Escaped double quotes help to ensure hostnames with spaces are kept intact
-$GAME_DIR/srcds_run -game tf -console -usercon \
+"$GAME_DIR/srcds_run" -game tf -console -usercon \
 +hostname \"${TF2_SERVER_HOSTNAME}\" \
-+exec $TF2_SERVER_CONFIG \
-+port $TF2_SERVER_PORT \
-+maxplayers $TF2_SERVER_MAXPLAYERS \
-+map $TF2_SERVER_MAP \
-+sv_lan $TF2_SVLAN
++exec "$TF2_SERVER_CONFIG" \
++port "$TF2_SERVER_PORT" \
++maxplayers "$TF2_SERVER_MAXPLAYERS" \
++map "$TF2_SERVER_MAP" \
++sv_lan "$TF2_SVLAN"
