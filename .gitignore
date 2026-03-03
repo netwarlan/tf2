@@ -1,11 +1,36 @@
-# macOS
+# === OS ===
 .DS_Store
+Thumbs.db
 
-# IDE
+# === IDE / Editor ===
 .idea/
 .vscode/
 *.swp
 *.swo
+*~
 
-# Docker
+# === Environment / Secrets ===
+.env
+.env.*
+!.env.sample
+!.env.example
+
+# === Logs ===
 *.log
+
+# === Docker ===
+data/
+
+# === Go ===
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+coverage.out
+coverage.html
+
+# === Node.js ===
+node_modules/
+dist/
