@@ -18,6 +18,21 @@ docker run -d \
 ghcr.io/netwarlan/tf2
 ```
 
+## Downloading Game Files Only
+To pre-download game files without starting the server (useful for pre-populating volumes):
+```
+docker run --rm -v tf2-data:/app/tf2 \
+-e TF2_SERVER_UPDATE_ONLY_THEN_STOP=true \
+ghcr.io/netwarlan/tf2
+```
+
+To download and validate game files:
+```
+docker run --rm -v tf2-data:/app/tf2 \
+-e TF2_SERVER_VALIDATE_ONLY_THEN_STOP=true \
+ghcr.io/netwarlan/tf2
+```
+
 ## Environment Variables
 
 We can make dynamic changes to our TF2 containers by adjusting some of the environment variables passed to our image.
@@ -34,6 +49,8 @@ TF2_SERVER_PW | No password set
 TF2_SERVER_RCONPW | No password set
 TF2_SERVER_UPDATE_ON_START | true
 TF2_SERVER_VALIDATE_ON_START | false
+TF2_SERVER_UPDATE_ONLY_THEN_STOP | false
+TF2_SERVER_VALIDATE_ONLY_THEN_STOP | false
 TF2_SERVER_REMOTE_CFG | No url set
 TF2_SERVER_ENABLE_PROPHUNT | false
 TF2_SERVER_CONFIG | server.cfg

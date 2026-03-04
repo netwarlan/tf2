@@ -36,6 +36,8 @@ TF2_SERVER_UPDATE_ON_START="${TF2_SERVER_UPDATE_ON_START:-true}"
 TF2_SERVER_VALIDATE_ON_START="${TF2_SERVER_VALIDATE_ON_START:-false}"
 TF2_SERVER_ENABLE_PROPHUNT="${TF2_SERVER_ENABLE_PROPHUNT:-false}"
 TF2_SERVER_CONFIG="${TF2_SERVER_CONFIG:-server.cfg}"
+TF2_SERVER_UPDATE_ONLY_THEN_STOP="${TF2_SERVER_UPDATE_ONLY_THEN_STOP:-false}"
+TF2_SERVER_VALIDATE_ONLY_THEN_STOP="${TF2_SERVER_VALIDATE_ONLY_THEN_STOP:-false}"
 
 ## Validate numeric inputs
 ## ==============================================
@@ -48,6 +50,33 @@ if [[ ! "$TF2_SERVER_MAXPLAYERS" =~ ^[0-9]+$ ]]; then
   exit 1
 fi
 
+
+
+## Download game files only (without starting server)
+## ==============================================
+if [[ "$TF2_SERVER_UPDATE_ONLY_THEN_STOP" = true ]] || [[ "$TF2_SERVER_VALIDATE_ONLY_THEN_STOP" = true ]]; then
+echo "
+╔═══════════════════════════════════════════════╗
+║ Downloading game files only                   ║
+╚═══════════════════════════════════════════════╝"
+  if [[ "$TF2_SERVER_VALIDATE_ONLY_THEN_STOP" = true ]]; then
+    VALIDATE_FLAG='validate'
+  else
+    VALIDATE_FLAG=''
+  fi
+
+  "$STEAMCMD_DIR/steamcmd.sh" \
+  +force_install_dir "$GAME_DIR" \
+  +login "$STEAMCMD_USER" "$STEAMCMD_PASSWORD" "$STEAMCMD_AUTH_CODE" \
+  +app_update "$STEAMCMD_APP" $VALIDATE_FLAG \
+  +quit
+
+echo "
+╔═══════════════════════════════════════════════╗
+║ Game files downloaded. Stopping container.    ║
+╚═══════════════════════════════════════════════╝"
+  exit 0
+fi
 
 
 ## Update on startup
